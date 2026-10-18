@@ -1,15 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=frontend/index.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ankit Portfolio</title>
-    <script>
-      window.location.replace('frontend/index.html');
-    </script>
-  </head>
-  <body>
-    <p>Redirecting to the portfolio...</p>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e63946">
+  <meta name="description" content="Ankit Kumar — Full Stack Web Developer and Generative AI Developer, studying Artificial Intelligence and Data Science.">
+  <meta property="og:title" content="Ankit Kumar | Full Stack & Generative AI Developer">
+  <meta property="og:description" content="A premium portfolio for Ankit Kumar, B.Tech student in Artificial Intelligence and Data Science.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ankitbuilds-sec.github.io/Poertfolio-Ankit/">
+  <title>Ankit Kumar | Full Stack & Generative AI Developer</title>
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+  <link rel="stylesheet" href="css/chatbot-overrides.css">
+  <link rel="stylesheet" href="css/photo.css">
+  <link rel="stylesheet" href="css/about-photo.css">
+  <link rel="stylesheet" href="css/about-photo-override.css">
+  <script defer src="js/script.js"></script>
+</head>
+<body>
+  <div class="page-glow page-glow-one" aria-hidden="true"></div>
+  <div class="page-glow page-glow-two" aria-hidden="true"></div>
+  <header class="site-header" id="top">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a class="brand" href="#home" aria-label="Ankit Kumar home"><span class="brand-mark">AK</span><span>ANKIT<span class="brand-dot">.</span></span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span></span><span></span><span></span><span class="sr-only">Toggle navigation</span></button>
+      <div class="nav-menu" id="site-menu">
+        <a class="nav-link active" href="#home">Home</a><a class="nav-link" href="#about">About</a><a class="nav-link" href="#education">Education</a><a class="nav-link" href="#skills">Skills</a><a class="nav-link" href="#projects">Projects</a><a class="nav-link" href="#services">Services</a><a class="nav-link" href="#contact">Contact</a>
+        <a class="button button-small button-outline" href="assets/resume/Ankit_Kumar_Resume.pdf" download>Download resume <span>↗</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container section" id="home">
+      <div class="hero-copy reveal"><p class="eyebrow"><span class="eyebrow-line"></span> ANKIT KUMAR</p><h1>Turning ideas into <span class="accent">digital experiences.</span></h1><p class="hero-title-note">FULL STACK WEB DEVELOPER · GENERATIVE AI DEVELOPER</p><p class="hero-text">I build modern web experiences and explore the possibilities of Generative AI through creative technology and thoughtful engineering.</p><div class="hero-actions"><a class="button button-primary" href="#about">Explore my world <span>↗</span></a><a class="button button-ghost" href="#contact">Let's connect <span>↗</span></a></div><div class="hero-meta"><span><strong>01</strong> Sengunthar Engineering College</span><span><strong>02</strong> B.Tech · AI & Data Science</span></div></div>
+      <div class="hero-visual reveal reveal-delay"><div class="photo-wrap"><img class="hero-photo" src="tcs pic.jpeg" alt="Professional portrait of Ankit Kumar"></div><div class="visual-label"><strong>01 / 01</strong>creative technology</div></div>
+    </section>
+
+    <section class="ticker" aria-label="Technology focus"><div class="ticker-track"><span>HTML5</span><i>✦</i><span>CSS3</span><i>✦</i><span>JAVASCRIPT</span><i>✦</i><span>NODE.JS</span><i>✦</i><span>POSTGRESQL</span><i>✦</i><span>GENERATIVE AI</span><i>✦</i><span>HTML5</span><i>✦</i><span>CSS3</span><i>✦</i><span>JAVASCRIPT</span></div></section>
+
+    <section class="section container split-section" id="about"><div class="section-label reveal"><span>01</span><span class="label-line"></span><span>ABOUT ME</span></div><div class="split-content"><div class="about-art about-photo-card reveal"><img src="tcs pic.jpeg" alt="Professional portrait of Ankit Kumar"><div class="art-note"><span>learning</span><strong>in public</strong></div></div><div class="about-copy reveal reveal-delay"><p class="section-kicker">A developer in the making</p><h2>Turning <span class="gradient-text">real problems</span> into thoughtful software.</h2><p>I’m interested in the space where software engineering meets intelligent technology. I enjoy creating responsive, accessible websites, developing practical full stack applications, and experimenting with AI capabilities that make products more useful.</p><p>My goal is to keep learning modern tools, solve real-world problems through code, and write maintainable systems with a clear user experience from the first click to the final interaction.</p><div class="about-signature">Ankit Kumar <span>· 2023—2027</span></div></div></div></section>
+
+    <section class="section container" id="education"><div class="section-label reveal"><span>02</span><span class="label-line"></span><span>EDUCATION</span></div><div class="section-heading reveal"><p class="section-kicker">The foundation</p><h2>Academic <span class="gradient-text">journey.</span></h2></div><div id="educationGrid" aria-live="polite"><article class="education-card reveal"><div class="education-year">2023<br><span>—</span><br>2027</div><div class="education-details"><p class="card-index">01 / CURRENTLY PURSUING</p><h3>Bachelor of Technology <span>(B.Tech)</span></h3><p class="degree">Artificial Intelligence and Data Science</p><p class="college">Sengunthar Engineering College</p></div><div class="cgpa"><span>CGPA</span><strong>7.8</strong><small>/ 10</small></div></article></div></section>
+
+    <section class="section container" id="skills"><div class="section-label reveal"><span>03</span><span class="label-line"></span><span>SKILLS</span></div><div class="section-heading heading-row reveal"><div><p class="section-kicker">Tools of the trade</p><h2>Curious mind. <span class="gradient-text">Growing toolkit.</span></h2></div><p class="heading-note">A flexible foundation I’m continuously expanding through projects, practice, and experimentation.</p></div><div class="skills-grid"><article class="skill-card reveal"><span class="skill-number">01</span><h3>Frontend</h3><p>Interfaces that feel clear, responsive, and considered.</p><div class="skill-list"><span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>Responsive Design</span><span>React</span></div></article><article class="skill-card reveal reveal-delay"><span class="skill-number">02</span><h3>Backend</h3><p>Practical APIs and application logic for useful products.</p><div class="skill-list"><span>Node.js</span><span>Express.js</span><span>REST APIs</span></div></article><article class="skill-card reveal"><span class="skill-number">03</span><h3>Data & AI</h3><p>Exploring data, language models, and AI-powered experiences.</p><div class="skill-list"><span>PostgreSQL</span><span>MongoDB</span><span>SQL</span><span>Prompt Engineering</span><span>LLM APIs</span></div></article><article class="skill-card reveal reveal-delay"><span class="skill-number">04</span><h3>Workflow</h3><p>Tools that help me build, debug, and keep improving.</p><div class="skill-list"><span>Git</span><span>GitHub</span><span>VS Code</span><span>DevTools</span></div></article></div></section>
+
+    <section class="section container" id="projects"><div class="section-label reveal"><span>04</span><span class="label-line"></span><span>PROJECTS</span></div><div class="section-heading reveal"><p class="section-kicker">A quiet space for what’s next</p><h2>Something beautiful <span class="gradient-text">is in the making.</span></h2></div><div class="empty-state reveal"><div class="empty-mark" aria-hidden="true">✦</div><h3>New projects are on their way.</h3><p>Stay tuned.</p></div></section>
+
+    <section class="section container" id="services"><div class="section-label reveal"><span>05</span><span class="label-line"></span><span>SERVICES</span></div><div class="section-heading reveal"><p class="section-kicker">What I can build</p><h2>From first sketch <span class="gradient-text">to shipped idea.</span></h2></div><div class="services-grid"><article class="service reveal"><span>01</span><h3>Responsive Website Development</h3><p>Modern, accessible websites that work beautifully across screens.</p><a href="#contact" aria-label="Discuss responsive website development">↗</a></article><article class="service reveal reveal-delay"><span>02</span><h3>Frontend Web Development</h3><p>Thoughtful interfaces with polished interactions and clear structure.</p><a href="#contact" aria-label="Discuss frontend web development">↗</a></article><article class="service reveal"><span>03</span><h3>Full Stack Applications</h3><p>Practical experiences connecting a useful frontend to reliable APIs.</p><a href="#contact" aria-label="Discuss full stack applications">↗</a></article><article class="service reveal reveal-delay"><span>04</span><h3>Generative AI Integration</h3><p>Early-stage AI concepts that turn language models into product features.</p><a href="#contact" aria-label="Discuss generative AI integration">↗</a></article></div></section>
+
+    <section class="section process-section"><div class="container"><div class="section-label reveal"><span>06</span><span class="label-line"></span><span>PROCESS</span></div><div class="section-heading reveal"><p class="section-kicker">How I build solutions</p><h2>Make it useful. <span class="gradient-text">Make it better.</span></h2></div><div class="process-grid"><article class="process-step reveal"><span>01</span><h3>Understand</h3><p>Clarify the problem, people, and outcome.</p></article><article class="process-step reveal reveal-delay"><span>02</span><h3>Plan</h3><p>Shape the architecture and user experience.</p></article><article class="process-step reveal"><span>03</span><h3>Develop</h3><p>Build, test, and refine the solution.</p></article><article class="process-step reveal reveal-delay"><span>04</span><h3>Improve</h3><p>Deploy, evaluate, and keep learning.</p></article></div></div></section>
+
+    <section class="section container contact-section" id="contact"><div class="contact-intro reveal"><div class="section-label"><span>07</span><span class="label-line"></span><span>CONTACT</span></div><p class="section-kicker">Have an idea?</p><h2>Let’s make something <span class="gradient-text">meaningful.</span></h2><p>I’m always open to learning from interesting problems, collaborating on thoughtful builds, and connecting with people who enjoy making things.</p><div class="contact-links"><a href="mailto:ankitkumar.data39@gmail.com">ankitkumar.data39@gmail.com <span>↗</span></a><button class="copy-email" type="button" data-email="ankitkumar.data39@gmail.com">Copy email <span>⧉</span></button><a href="tel:+919229047285">+91 9229047285 <span>↗</span></a><a href="https://www.linkedin.com/in/ankit-kumar-b66067406/" target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a><a href="https://github.com/ankitbuilds-SEC" target="_blank" rel="noreferrer">GitHub <span>↗</span></a></div></div><form class="contact-form reveal reveal-delay" id="contact-form" novalidate><div class="form-row"><label for="name">Full name<input id="name" name="name" type="text" autocomplete="name" required><span class="field-error" data-error-for="name"></span></label><label for="email">Email address<input id="email" name="email" type="email" autocomplete="email" required><span class="field-error" data-error-for="email"></span></label></div><label for="subject">Subject<input id="subject" name="subject" type="text" required><span class="field-error" data-error-for="subject"></span></label><label for="message">Message<textarea id="message" name="message" rows="5" required></textarea><span class="field-error" data-error-for="message"></span></label><button class="button button-primary" type="submit">Open email draft <span>↗</span></button><p class="form-status" id="form-status" role="status"></p></form></section>
+  </main>
+  <div id="portfolio-chatbot" class="chatbot" aria-live="polite"><button class="chatbot-toggle" type="button" aria-expanded="false" aria-controls="chatbot-panel"><span>AI</span><span class="sr-only">Open portfolio assistant</span></button><section class="chatbot-panel" id="chatbot-panel" hidden aria-label="Portfolio assistant"><header><strong>Portfolio assistant</strong><button class="chatbot-close" type="button" aria-label="Close assistant">×</button></header><div class="chatbot-messages"></div><div class="chatbot-quick"><button type="button">Tell me about education.</button><button type="button">What projects are available?</button></div><form class="chatbot-form"><input class="chatbot-input" type="text" maxlength="2000" placeholder="Ask about Ankit..." aria-label="Ask the portfolio assistant"><button class="chatbot-send" type="submit">Send</button></form></section></div>
+  <footer class="footer"><div class="container footer-main"><div><a class="brand" href="#top"><span class="brand-mark">AK</span><span>ANKIT<span class="brand-dot">.</span></span></a><p>Full Stack Web Developer<br>Generative AI Developer</p></div><div class="footer-nav"><a href="#about">About</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div><div class="footer-social"><a href="https://github.com/ankitbuilds-SEC" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.linkedin.com/in/ankit-kumar-b66067406/" target="_blank" rel="noreferrer">LinkedIn ↗</a><button id="back-to-top" type="button">Back to top ↑</button></div></div><div class="container footer-bottom"><span>© <span id="copyright-year"></span> Ankit Kumar</span><span>Built with curiosity & care.</span></div></footer>
+</body>
 </html>

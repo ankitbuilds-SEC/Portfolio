@@ -1,0 +1,3 @@
+.gradient-text{color:var(--red)}
+.chatbot{position:relative;z-index:40}
+.chatbot-toggle,.chatbot-panel{pointer-events:auto}
