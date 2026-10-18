@@ -1,16 +1,12 @@
 {
-  "name": "ankit-portfolio-db",
+  "name": "ankit-portfolio-api",
   "version": "1.0.0",
-  "description": "Portfolio website with a simple contact form database",
-  "main": "backend/server.js",
+  "private": true,
+  "description": "API for the Ankit Kumar portfolio assistant",
   "scripts": {
     "start": "node backend/server.js"
   },
-  "dependencies": {
-    "cors": "^2.8.1",
-    "dotenv": "^18.0.8",
-    "express": "^4.21.2",
-    "nodemailer": "^6.9.16",
-    "sqlite3": "^5.1.0"
+  "engines": {
+    "node": ">=18"
   }
 }
