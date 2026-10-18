@@ -7,7 +7,7 @@ const ALLOWED_ORIGINS = new Set((process.env.CORS_ALLOWED_ORIGINS || 'http://loc
 const profile = {
   name: 'Ankit Kumar',
   title: 'Full Stack Web Developer and Generative AI Developer',
-  education: 'B.Tech in Artificial Intelligence and Data Science at Sengunthar Engineering College, 2023–2027, CGPA 7.8/10.',
+  education: '10th at Vaishali Vidhyalaya, Mahua, Vaishali in 2021 with 75%; 12th at Vaishali H/S, Mahua, Vaishali in 2023 with 68%; B.Tech in Artificial Intelligence and Data Science at Sengunthar Engineering College, 2023–2027, CGPA 7.8/10.',
   skills: 'HTML5, CSS3, JavaScript, responsive design, React, Node.js, Express.js, REST APIs, PostgreSQL, MongoDB, SQL, prompt engineering, LLM APIs, Git, GitHub, VS Code, and DevTools.',
   projects: 'No projects have been published yet. New projects are on their way.',
   contact: 'ankitkumar.data39@gmail.com, GitHub at github.com/ankitbuilds-SEC, and LinkedIn at linkedin.com/in/ankit-kumar-b66067406.'
@@ -111,7 +111,11 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (request.method === 'GET' && url.pathname === '/api/education') {
-    return sendJson(response, 200, [{ start_year: '2023', end_year: '2027', status: 'CURRENTLY PURSUING', degree: 'Bachelor of Technology (B.Tech)', field_of_study: 'Artificial Intelligence and Data Science', institution: 'Sengunthar Engineering College', cgpa: '7.8' }], request);
+    return sendJson(response, 200, [
+      { period: '2021 · PASSED', status: 'SECONDARY EDUCATION', degree: '10th Standard', field_of_study: 'Secondary School Education', institution: 'Vaishali Vidhyalaya, Mahua, Vaishali', score_label: 'PERCENTAGE', score: '75%' },
+      { period: '2023 · PASSED', status: 'HIGHER SECONDARY', degree: '12th Standard', field_of_study: 'Higher Secondary Education', institution: 'Vaishali H/S, Mahua, Vaishali', score_label: 'PERCENTAGE', score: '68%' },
+      { start_year: '2023', end_year: '2027', status: 'CURRENTLY PURSUING', degree: 'Bachelor of Technology (B.Tech)', field_of_study: 'Artificial Intelligence and Data Science', institution: 'Sengunthar Engineering College', score_label: 'CGPA', score: '7.8', score_suffix: '/ 10' }
+    ], request);
   }
 
   if (request.method === 'GET' && url.pathname === '/api/chatbot/status') {
