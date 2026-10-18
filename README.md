@@ -1,66 +1,52 @@
 # Ankit Kumar — Developer Portfolio
 
-A responsive static portfolio for Ankit Kumar, a B.Tech student specializing in Artificial Intelligence and Data Science with a focus on full stack web development and Generative AI.
+Responsive red-and-pink portfolio for Ankit Kumar, a B.Tech student focused on Full Stack Web Development and Generative AI.
+
+## Current architecture
+
+- Static HTML, CSS, and vanilla JavaScript frontend.
+- Lightweight Node.js API in `backend/server.js`.
+- No React, Vite, or PostgreSQL code exists in the current repository.
+- GitHub Pages hosts the frontend only; the Node API needs a separate host.
 
 ## Features
 
-- Premium dark pink-and-red visual system with responsive layouts.
-- Semantic HTML, keyboard-friendly navigation, visible focus states, and reduced-motion support.
-- Mobile navigation, active section highlighting, project category filters, reveal animations, copy-email feedback, dynamic copyright year, and back-to-top control.
-- Contact form validation that opens a prefilled email draft; it does not claim to send messages from static hosting.
-- GitHub Pages-ready relative asset paths and custom 404 page.
-
-## Technologies
-
-HTML5, CSS3, vanilla JavaScript, Google Fonts, and inline SVG placeholders. No framework or backend is required.
-
-## Personal details
-
-- **Name:** Ankit Kumar
-- **Headline:** Full Stack Web Developer | Generative AI Developer
-- **College:** Sengunthar Engineering College
-- **Degree:** B.Tech, Artificial Intelligence and Data Science (2023–2027)
-- **CGPA:** 7.8/10
-- **Email:** ankitkumar.data39@gmail.com
+- Responsive navigation, accessibility labels, focus states, and reduced-motion support.
+- Cherry-red and blush-pink design with day/night mode.
+- Hero and About portrait using `tcs pic.jpeg`.
+- Verified education content and an intentionally empty Projects section.
+- Client-side contact validation that opens a prefilled email draft.
+- AI portfolio assistant with server-side OpenAI integration and a safe portfolio fallback.
 
 ## Local development
 
-Open `index.html` directly for a quick preview, or use a local static server:
+Run the API from the project root:
 
 ```powershell
-python -m http.server 8000
+$env:OPENAI_API_KEY="your-valid-openai-key"
+npm start
 ```
 
-Then visit `http://localhost:8000`.
+Serve the static frontend from another terminal and open `index.html`. On localhost the frontend uses `http://localhost:3000` for API calls.
 
-## Structure
+Without `OPENAI_API_KEY`, the assistant responds from approved portfolio data and reports `provider: offline`; it does not invent projects or experience.
 
-```text
-index.html · 404.html
-assets/     images, icons, and resume instructions
-css/        style.css and responsive.css
-js/         script.js
-docs/       deployment notes
-```
+## API routes
 
-## Resume and project content
+- `GET /api/health`
+- `GET /api/profile`
+- `GET /api/skills`
+- `GET /api/education`
+- `GET /api/projects` — returns an empty array until real projects are supplied.
+- `GET /api/chatbot/status`
+- `POST /api/chatbot/message`
 
-Add the real PDF at `assets/resume/Ankit_Kumar_Resume.pdf`. The project cards are explicitly editable examples and should be replaced with verified projects, repository URLs, live demos, and real screenshots before presenting them as completed work.
+Configure `CORS_ALLOWED_ORIGINS` when hosting the API separately. Never put `OPENAI_API_KEY` in frontend files or commit a `.env` file.
 
-## GitHub Pages deployment
+## Deployment
 
-```powershell
-git status
-git remote -v
-git add index.html 404.html assets css js README.md docs .gitignore
-git commit -m "Build responsive pink and red developer portfolio"
-git push origin main
-```
+The frontend deploys automatically to:
 
-In the repository, open **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/ (root)`, then save. GitHub’s deployment status should be checked before calling the site live.
+https://ankitbuilds-sec.github.io/Portfolio/
 
-Expected URL: `https://ankitbuilds-SEC.github.io/Poertfolio-Ankit/` (not verified by this local build).
-
-## Future improvements
-
-Add the actual resume, replace example projects with verified work, add project screenshots and links, and connect the form to a configured form service if direct submissions are needed.
+To make the chatbot use the real AI service in production, deploy `backend/server.js` to a Node-compatible host, set `OPENAI_API_KEY`, `OPENAI_MODEL`, and `CORS_ALLOWED_ORIGINS`, then define `window.__API_BASE__` before `js/script.js` loads.

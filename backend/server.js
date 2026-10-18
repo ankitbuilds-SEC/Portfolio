@@ -1,10 +1,8 @@
 const http = require('node:http');
-const fs = require('node:fs');
-const path = require('node:path');
-
 const PORT = Number(process.env.PORT || 3000);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const ALLOWED_ORIGINS = new Set((process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:4173,https://ankitbuilds-sec.github.io').split(',').map(origin => origin.trim()).filter(Boolean));
 
 const profile = {
   name: 'Ankit Kumar',
@@ -19,14 +17,19 @@ const rateLimit = new Map();
 const RATE_LIMIT_WINDOW = 60_000;
 const MAX_REQUESTS_PER_WINDOW = 20;
 
-function sendJson(response, status, payload) {
-  response.writeHead(status, {
+function sendJson(response, status, payload, request) {
+  const origin = request?.headers.origin;
+  const headers = {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
-    'Access-Control-Allow-Origin': '*',
+    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
-  });
+  };
+  if (origin && ALLOWED_ORIGINS.has(origin)) { headers['Access-Control-Allow-Origin'] = origin; headers.Vary = 'Origin'; }
+  response.writeHead(status, headers);
   response.end(JSON.stringify(payload));
 }
 
@@ -65,9 +68,12 @@ function fallbackAnswer(message) {
 }
 
 async function openAiAnswer(message) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
   const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` },
+    signal: controller.signal,
     body: JSON.stringify({
       model: OPENAI_MODEL,
       input: [
@@ -76,7 +82,7 @@ async function openAiAnswer(message) {
       ],
       max_output_tokens: 300
     })
-  });
+  }).finally(() => clearTimeout(timeout));
   if (!response.ok) throw new Error(`OpenAI request failed with status ${response.status}.`);
   const data = await response.json();
   const answer = typeof data.output_text === 'string' ? data.output_text.trim() : '';
@@ -85,32 +91,48 @@ async function openAiAnswer(message) {
 }
 
 const server = http.createServer(async (request, response) => {
-  if (request.method === 'OPTIONS') return sendJson(response, 204, {});
+  if (request.method === 'OPTIONS') return sendJson(response, 204, {}, request);
   const url = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
 
+  if (request.method === 'GET' && url.pathname === '/api/health') {
+    return sendJson(response, 200, { ok: true, service: 'portfolio-api' }, request);
+  }
+
+  if (request.method === 'GET' && url.pathname === '/api/profile') {
+    return sendJson(response, 200, { name: profile.name, title: profile.title, education: profile.education, contact: profile.contact }, request);
+  }
+
+  if (request.method === 'GET' && url.pathname === '/api/skills') {
+    return sendJson(response, 200, { skills: profile.skills }, request);
+  }
+
+  if (request.method === 'GET' && url.pathname === '/api/projects') {
+    return sendJson(response, 200, { projects: [] }, request);
+  }
+
   if (request.method === 'GET' && url.pathname === '/api/education') {
-    return sendJson(response, 200, [{ start_year: '2023', end_year: '2027', status: 'CURRENTLY PURSUING', degree: 'Bachelor of Technology (B.Tech)', field_of_study: 'Artificial Intelligence and Data Science', institution: 'Sengunthar Engineering College', cgpa: '7.8' }]);
+    return sendJson(response, 200, [{ start_year: '2023', end_year: '2027', status: 'CURRENTLY PURSUING', degree: 'Bachelor of Technology (B.Tech)', field_of_study: 'Artificial Intelligence and Data Science', institution: 'Sengunthar Engineering College', cgpa: '7.8' }], request);
   }
 
   if (request.method === 'GET' && url.pathname === '/api/chatbot/status') {
-    return sendJson(response, 200, { enabled: true, apiConfigured: Boolean(OPENAI_API_KEY) });
+    return sendJson(response, 200, { enabled: true, apiConfigured: Boolean(OPENAI_API_KEY) }, request);
   }
 
   if (request.method === 'POST' && url.pathname === '/api/chatbot/message') {
-    if (!allowed(request)) return sendJson(response, 429, { error: 'Too many assistant messages. Please wait a minute and try again.' });
+    if (!allowed(request)) return sendJson(response, 429, { error: 'Too many assistant messages. Please wait a minute and try again.' }, request);
     try {
       const body = await requestBody(request);
       const message = typeof body.message === 'string' ? body.message.trim() : '';
-      if (!message) return sendJson(response, 400, { error: 'Please enter a message for the AI assistant.' });
-      if (message.length > 2000) return sendJson(response, 400, { error: 'Messages must be 2000 characters or fewer.' });
-      if (!OPENAI_API_KEY) return sendJson(response, 200, { answer: fallbackAnswer(message), provider: 'offline', fallbackUsed: true });
-      try { return sendJson(response, 200, { answer: await openAiAnswer(message), provider: 'openai', fallbackUsed: false }); } catch (error) {
-        return sendJson(response, 200, { answer: fallbackAnswer(message), provider: 'offline', fallbackUsed: true, status: error.message });
+      if (!message) return sendJson(response, 400, { error: 'Please enter a message for the AI assistant.' }, request);
+      if (message.length > 2000) return sendJson(response, 400, { error: 'Messages must be 2000 characters or fewer.' }, request);
+      if (!OPENAI_API_KEY) return sendJson(response, 200, { answer: fallbackAnswer(message), provider: 'offline', fallbackUsed: true }, request);
+      try { return sendJson(response, 200, { answer: await openAiAnswer(message), provider: 'openai', fallbackUsed: false }, request); } catch (error) {
+        return sendJson(response, 200, { answer: fallbackAnswer(message), provider: 'offline', fallbackUsed: true, status: error.message }, request);
       }
-    } catch (error) { return sendJson(response, 400, { error: error.message }); }
+    } catch (error) { return sendJson(response, 400, { error: error.message }, request); }
   }
 
-  sendJson(response, 404, { error: 'Not found.' });
+  sendJson(response, 404, { error: 'Not found.' }, request);
 });
 
 server.listen(PORT, () => console.log(`Portfolio API listening on http://localhost:${PORT}`));
