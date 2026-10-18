@@ -210,9 +210,9 @@
           </a>
           <a class="rb-contact-method" href="${s.github || '#'}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <div class="ic"><i class="fab fa-github"></i></div>
-            <div><div class="lbl">GitHub</div><div class="val">github.com/ankitkumaranalytics</div></div>
+            <div><div class="lbl">GitHub</div><div class="val">github.com/ankitbuilds-SEC</div></div>
           </a>
-          ${s.portfolio ? '<a class="rb-contact-method" href="' + s.portfolio + '" target="_blank" rel="noopener noreferrer" aria-label="Portfolio"><div class="ic"><i class="fas fa-globe"></i></div><div><div class="lbl">Portfolio</div><div class="val">ankitkumaranalytics.github.io</div></div></a>' : ''}
+          ${s.portfolio ? '<a class="rb-contact-method" href="' + s.portfolio + '" target="_blank" rel="noopener noreferrer" aria-label="Portfolio"><div class="ic"><i class="fas fa-globe"></i></div><div><div class="lbl">Portfolio</div><div class="val">ankitbuilds-SEC.github.io</div></div></a>' : ''}
           <div class="rb-contact-method"><div class="ic"><i class="fas fa-map-marker-alt"></i></div><div><div class="lbl">Location</div><div class="val">${data.personal.location || 'India'}</div></div></div>
         </div>
         <div class="rb-contact-actions">

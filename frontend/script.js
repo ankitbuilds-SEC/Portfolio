@@ -5,20 +5,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const apiBase = window.__API_BASE__ || (window.location.hostname === "localhost" ? "http://localhost:3000" : window.location.origin);
-    const loadingScreen = document.getElementById('loading-screen');
-
-    window.addEventListener('load', () => {
-        if (loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            loadingScreen.style.pointerEvents = 'none';
-            setTimeout(() => {
-                loadingScreen.remove();
-            }, 400);
-        }
-    });
-
-    console.log("Portfolio Loaded Successfully");
-
     /* ===============================
        Smooth Scroll
     =============================== */
@@ -119,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (window.scrollY > 50) {
 
-            header.style.boxShadow = "0 5px 20px rgba(0,0,0,.3)";
+            header.style.boxShadow = "0 10px 30px rgba(112, 28, 43, .08)";
 
         }
 
@@ -131,12 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    /* Typing animation removed per request.
-       Show static heading "Data Analyst" only. */
+    /* Keep the hero label aligned with the modern portfolio direction. */
 
     const typingElement = document.querySelector(".hero-content h3");
     if (typingElement) {
-        typingElement.textContent = "Data Analyst";
+        typingElement.textContent = "Full Stack & AI";
     }
 
     /* ===============================
@@ -183,7 +168,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("scroll", reveal);
 
+    window.addEventListener("load", reveal, { once: true });
+
     reveal();
+
+    requestAnimationFrame(reveal);
 
     /* ===============================
        Project and Certificate Filters
@@ -271,14 +260,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show error message
     function showError(message) {
       formStatus.textContent = message;
-      formStatus.style.color = "#ef4444";
+      formStatus.style.color = "#E63946";
       formStatus.style.marginTop = "12px";
     }
 
     // Show success message
     function showSuccess(message) {
       formStatus.textContent = message;
-      formStatus.style.color = "#10b981";
+      formStatus.style.color = "#B5122A";
       formStatus.style.marginTop = "12px";
     }
 
@@ -368,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-          showStatus("Sending your message...", "#38bdf8");
+          showStatus("Sending your message...", "#E63946");
           
           const response = await fetch(`${apiBase}/api/messages`, {
             method: "POST",
@@ -431,6 +420,11 @@ document.addEventListener("DOMContentLoaded", () => {
     =============================== */
 
     const topButton = document.getElementById("back-to-top");
+    const footerYear = document.getElementById("year");
+
+    if (footerYear) {
+        footerYear.textContent = new Date().getFullYear();
+    }
 
     if (topButton) {
         window.addEventListener("scroll", () => {
@@ -448,18 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
-
-    topButton.addEventListener("click", () => {
-
-        window.scrollTo({
-
-            top: 0,
-
-            behavior: "smooth"
-
-        });
-
-    });
 
 /* ===============================
        Live Location Map
@@ -518,14 +500,24 @@ document.addEventListener("DOMContentLoaded", () => {
       if (locTimeEl) locTimeEl.textContent = formatTime(updatedAt);
     }
 
+    function createPortfolioMapMarker(lat, lng) {
+      const icon = L.divIcon({
+        className: 'portfolio-map-marker-icon',
+        html: '<span aria-hidden="true"></span>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+      return L.marker([lat, lng], { icon });
+    }
+
     function createBaseMap(lat, lng, zoom) {
       const map = L.map(mapEl, { scrollWheelZoom: false }).setView([lat, lng], zoom);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
-      const marker = L.marker([lat, lng]).addTo(map);
-      const accuracyCircle = L.circle([lat, lng], { radius: 100, color: '#38bdf8', fillOpacity: 0.1 }).addTo(map);
+      const marker = createPortfolioMapMarker(lat, lng).addTo(map);
+      const accuracyCircle = L.circle([lat, lng], { radius: 100, color: '#E63946', fillColor: '#F4A6B8', fillOpacity: 0.1 }).addTo(map);
       return { map, marker, accuracyCircle };
     }
 
@@ -628,13 +620,35 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 10000);
     }
 
-    function startBroadcast() {
+    async function startBroadcast() {
       if (!navigator.geolocation) {
         setStatus('Geolocation is not supported by your browser', 'error');
         return;
       }
       if (!secureContext && !isLocalhost) {
         setStatus('Location requires HTTPS (or localhost) to work', 'error');
+        return;
+      }
+
+      try {
+        const session = await fetch(`${apiBase}/api/admin/session`, { credentials: 'same-origin' });
+        if (!session.ok) {
+          setStatus(
+            session.status === 503
+              ? 'Administrator authentication is not configured.'
+              : 'Sign in at /admin before sharing your live location.',
+            'error'
+          );
+          setShareUi(false);
+          isOwner = false;
+          try { localStorage.removeItem(OWNER_KEY); } catch (e) {}
+          return;
+        }
+      } catch (error) {
+        setStatus('Unable to verify administrator access. Please try again.', 'error');
+        setShareUi(false);
+        isOwner = false;
+        try { localStorage.removeItem(OWNER_KEY); } catch (e) {}
         return;
       }
 
@@ -647,6 +661,8 @@ document.addEventListener("DOMContentLoaded", () => {
       let marker = null;
       let accuracyCircle = null;
       let lastSent = 0;
+      let requestPending = false;
+      let watchId = null;
 
       function onPosition(pos) {
         const { latitude, longitude, accuracy, heading, speed } = pos.coords;
@@ -658,9 +674,9 @@ document.addEventListener("DOMContentLoaded", () => {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
           }).addTo(map);
-marker = L.marker([latitude, longitude]).addTo(map);
+          marker = createPortfolioMapMarker(latitude, longitude).addTo(map);
           marker.bindPopup('📍 You are here (owner)').openPopup();
-          accuracyCircle = L.circle([latitude, longitude], { radius: accuracy || 100, color: '#22c55e', fillOpacity: 0.12 }).addTo(map);
+          accuracyCircle = L.circle([latitude, longitude], { radius: accuracy || 100, color: '#B5122A', fillColor: '#F4A6B8', fillOpacity: 0.12 }).addTo(map);
           currentViewerMap.map = map;
           currentViewerMap.marker = marker;
           currentViewerMap.accuracyCircle = accuracyCircle;
@@ -671,17 +687,35 @@ marker = L.marker([latitude, longitude]).addTo(map);
         }
 
         // Throttle broadcasting to at most once every 3 seconds.
-        if (now - lastSent > 3000) {
+        if (now - lastSent > 3000 && !requestPending) {
           lastSent = now;
+          requestPending = true;
           fetch(`${apiBase}/api/location`, {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lat: latitude, lng: longitude, accuracy, heading, speed })
-          }).catch(() => {});
+          }).then((response) => {
+            if (response.status === 401) {
+              throw new Error('Administrator session expired. Sign in again at /admin.');
+            }
+            if (!response.ok) {
+              throw new Error('Unable to share live location. Please try again.');
+            }
+            setStatus('Broadcasting live location', 'live');
+          }).catch((error) => {
+            setStatus(error.message || 'Unable to share live location.', 'error');
+            setShareUi(false);
+            isOwner = false;
+            try { localStorage.removeItem(OWNER_KEY); } catch (e) {}
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+          }).finally(() => {
+            requestPending = false;
+          });
         }
 
         updateMap(map, marker, accuracyCircle, latitude, longitude, accuracy, new Date().toISOString());
-        setStatus('Broadcasting live location', 'live');
+        if (lastSent === 0) setStatus('Location acquired; waiting to publish…', 'searching');
       }
 
       function onError(err) {
@@ -694,7 +728,7 @@ marker = L.marker([latitude, longitude]).addTo(map);
         try { localStorage.removeItem(OWNER_KEY); } catch (e) {}
       }
 
-      navigator.geolocation.watchPosition(onPosition, onError, {
+      watchId = navigator.geolocation.watchPosition(onPosition, onError, {
         enableHighAccuracy: true,
         maximumAge: 5000,
         timeout: 20000
@@ -877,10 +911,323 @@ marker = L.marker([latitude, longitude]).addTo(map);
     }
 
     /* ===============================
+       Featured Projects
+    =============================== */
+
+    /** @type {Array<{ title: string, description: string, technologyStack: string[], thumbnail?: string, githubUrl?: string, liveDemoUrl?: string, category?: string }>} */
+    const projectRecords = [];
+
+    function safeProjectUrl(value) {
+        if (typeof value !== 'string' || !value.trim()) return '';
+
+        try {
+            const url = new URL(value, window.location.href);
+            return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function renderProjects() {
+        const grid = document.getElementById('projectGrid');
+        const emptyState = document.getElementById('projectsEmptyState');
+        const template = document.getElementById('projectCardTemplate');
+        if (!grid || !emptyState || !template) return;
+
+        const cards = projectRecords
+            .filter(project => project && typeof project.title === 'string' && project.title.trim()
+                && typeof project.description === 'string' && project.description.trim())
+            .map(project => {
+                const card = document.importNode(template.content, true);
+                const title = card.querySelector('[data-project-title]');
+                const description = card.querySelector('[data-project-description]');
+                const category = card.querySelector('[data-project-category]');
+                const thumbnail = card.querySelector('[data-project-thumbnail]');
+                const image = card.querySelector('[data-project-thumbnail-image]');
+                const stack = card.querySelector('[data-project-stack]');
+                const githubLink = card.querySelector('[data-project-github]');
+                const demoLink = card.querySelector('[data-project-demo]');
+
+                title.textContent = project.title.trim();
+                description.textContent = project.description.trim();
+
+                if (project.category && typeof project.category === 'string') {
+                    category.textContent = project.category.trim();
+                    category.hidden = !category.textContent;
+                }
+
+                const thumbnailUrl = safeProjectUrl(project.thumbnail);
+                if (thumbnailUrl) {
+                    image.src = thumbnailUrl;
+                    image.alt = `${project.title.trim()} project preview`;
+                    thumbnail.hidden = false;
+                }
+
+                if (Array.isArray(project.technologyStack)) {
+                    project.technologyStack
+                        .filter(technology => typeof technology === 'string' && technology.trim())
+                        .forEach(technology => {
+                            const tag = document.createElement('li');
+                            tag.textContent = technology.trim();
+                            stack.appendChild(tag);
+                        });
+                }
+
+                const githubUrl = safeProjectUrl(project.githubUrl);
+                if (githubUrl) {
+                    githubLink.href = githubUrl;
+                    githubLink.hidden = false;
+                }
+
+                const liveDemoUrl = safeProjectUrl(project.liveDemoUrl);
+                if (liveDemoUrl) {
+                    demoLink.href = liveDemoUrl;
+                    demoLink.hidden = false;
+                }
+
+                return card;
+            });
+
+        grid.replaceChildren(...cards);
+        emptyState.hidden = cards.length > 0;
+    }
+
+    renderProjects();
+
+    /* ===============================
+       Education Section
+    =============================== */
+
+    async function renderEducationSection() {
+        const grid = document.getElementById('educationGrid');
+        const empty = document.getElementById('educationEmpty');
+
+        if (!grid) return;
+
+        try {
+            const response = await fetch(`${apiBase}/api/education`);
+            if (!response.ok) {
+                throw new Error('Unable to load education data');
+            }
+
+            const records = await response.json();
+            if (!Array.isArray(records) || records.length === 0) {
+                grid.innerHTML = '';
+                if (empty) empty.hidden = false;
+                return;
+            }
+
+            if (empty) empty.hidden = true;
+
+            grid.innerHTML = records.map((record) => {
+                const startYear = record.start_year || '—';
+                const endYear = record.end_year || (record.status === 'Pursuing' ? 'Expected' : '—');
+                const grade = record.grade ? `<div class="edu-stat"><span>Grade</span><strong>${record.grade}</strong></div>` : '';
+                const location = record.location ? `<div class="edu-stat"><span>Location</span><strong>${record.location}</strong></div>` : '';
+                const coursework = record.coursework ? `<p class="edu-extra"><strong>Coursework:</strong> ${record.coursework}</p>` : '';
+                const achievements = record.achievements ? `<p class="edu-extra"><strong>Achievements:</strong> ${record.achievements}</p>` : '';
+                const description = record.description ? `<p class="edu-summary">${record.description}</p>` : '';
+
+                return `
+                    <article class="education-card">
+                        <div class="education-header">
+                            <div>
+                                <span class="education-status ${record.status.toLowerCase().replace(/\s+/g, '-')}">${record.status}</span>
+                                <h3>${record.degree}</h3>
+                            </div>
+                            <span class="education-period">${startYear} — ${endYear}</span>
+                        </div>
+                        <p class="education-institution">${record.institution}</p>
+                        ${record.college ? `<p class="education-college">${record.college}</p>` : ''}
+                        ${record.field_of_study ? `<p class="education-field">${record.field_of_study}</p>` : ''}
+                        ${description}
+                        <div class="education-meta">
+                            ${grade}
+                            ${location}
+                        </div>
+                        ${coursework}
+                        ${achievements}
+                    </article>
+                `;
+            }).join('');
+        } catch (error) {
+            console.error('Education load failed:', error);
+            if (empty) empty.hidden = false;
+            grid.innerHTML = '<p class="education-error">Education information is temporarily unavailable.</p>';
+        }
+    }
+
+    renderEducationSection();
+
+    /* ===============================
+       Portfolio AI Assistant
+    =============================== */
+
+    function createPortfolioAssistant() {
+        if (document.getElementById('portfolio-chatbot')) {
+            return;
+        }
+
+        const chatbot = document.createElement('div');
+        chatbot.id = 'portfolio-chatbot';
+        chatbot.className = 'portfolio-chatbot';
+
+        chatbot.innerHTML = `
+            <button class="chatbot-toggle" type="button" aria-label="Open portfolio assistant">
+                <i class="fas fa-robot"></i>
+                <span class="chatbot-badge">AI</span>
+            </button>
+            <div class="chatbot-panel" aria-live="polite" aria-label="Portfolio assistant chat window" hidden>
+                <div class="chatbot-header">
+                    <div>
+                        <strong>Portfolio AI Assistant</strong>
+                        <small>Portfolio helper</small>
+                    </div>
+                    <button type="button" class="chatbot-close" aria-label="Close assistant"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="chatbot-messages"></div>
+
+                <div class="chatbot-quick-questions">
+                    <button type="button" class="quick-question">Tell me about your education.</button>
+                    <button type="button" class="quick-question">What technologies do you work with?</button>
+                    <button type="button" class="quick-question">What are your Generative AI interests?</button>
+                    <button type="button" class="quick-question">What projects are available?</button>
+                    <button type="button" class="quick-question">How can I contact you?</button>
+                </div>
+
+                <form class="chatbot-form">
+                    <input type="text" class="chatbot-input" aria-label="Type your question" placeholder="Ask about projects, education, skills, or interests..." autocomplete="off" maxlength="2000" />
+                    <button type="submit" class="chatbot-send">Send</button>
+                </form>
+            </div>
+        `;
+
+        document.body.appendChild(chatbot);
+
+        const toggle = chatbot.querySelector('.chatbot-toggle');
+        const panel = chatbot.querySelector('.chatbot-panel');
+        const closeBtn = chatbot.querySelector('.chatbot-close');
+        const form = chatbot.querySelector('.chatbot-form');
+        const input = chatbot.querySelector('.chatbot-input');
+        const messages = chatbot.querySelector('.chatbot-messages');
+        const sendButton = chatbot.querySelector('.chatbot-send');
+        const quickQuestions = chatbot.querySelectorAll('.quick-question');
+        let isRequestPending = false;
+
+        const addMessage = (sender, text) => {
+            const msg = document.createElement('div');
+            msg.className = `chat-message ${sender}`;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const messageText = document.createElement('span');
+            messageText.textContent = text;
+            bubble.appendChild(messageText);
+
+            const timestamp = document.createElement('small');
+            timestamp.textContent = time;
+            bubble.appendChild(timestamp);
+            msg.appendChild(bubble);
+            messages.appendChild(msg);
+            messages.scrollTop = messages.scrollHeight;
+        };
+
+        const setTyping = (isTyping) => {
+            const typingEl = chatbot.querySelector('.chatbot-typing');
+            if (isTyping) {
+                if (!typingEl) {
+                    const el = document.createElement('div');
+                    el.className = 'chat-message bot chatbot-typing';
+                    el.innerHTML = '<div class="bubble"><span>Typing...</span></div>';
+                    messages.appendChild(el);
+                }
+                return;
+            }
+
+            if (typingEl) typingEl.remove();
+        };
+
+        const askAssistant = async (question) => {
+            if (!question.trim() || isRequestPending) return;
+            isRequestPending = true;
+            addMessage('user', question.trim());
+            setTyping(true);
+            sendButton.disabled = true;
+            quickQuestions.forEach(button => {
+                button.disabled = true;
+            });
+
+            try {
+                const response = await fetch(`${apiBase}/api/chatbot/message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: question.trim() })
+                });
+
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(data.error || 'The assistant could not process your message. Please try again.');
+                }
+                if (typeof data.answer !== 'string' || !data.answer.trim()) {
+                    throw new Error('The assistant returned an empty response. Please try again.');
+                }
+                setTyping(false);
+                addMessage('bot', data.answer);
+            } catch (error) {
+                setTyping(false);
+                const message = error.message === 'Failed to fetch'
+                    ? 'The assistant is temporarily unavailable. Please use the contact form or public links to reach out.'
+                    : error.message || 'The assistant is temporarily unavailable. Please try again.';
+                addMessage('bot', message);
+            } finally {
+                isRequestPending = false;
+                sendButton.disabled = false;
+                quickQuestions.forEach(button => {
+                    button.disabled = false;
+                });
+            }
+        };
+
+        const openChat = () => {
+            panel.hidden = false;
+            input.focus();
+        };
+
+        toggle.addEventListener('click', () => {
+            panel.hidden = !panel.hidden;
+            if (!panel.hidden) input.focus();
+        });
+
+        closeBtn.addEventListener('click', () => {
+            panel.hidden = true;
+        });
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const question = input.value.trim();
+            if (!question) return;
+            input.value = '';
+            askAssistant(question);
+        });
+
+        chatbot.querySelectorAll('.quick-question').forEach((button) => {
+            button.addEventListener('click', () => {
+                openChat();
+                askAssistant(button.textContent.trim());
+            });
+        });
+
+        addMessage('bot', 'Hi! 👋 I\'m your AI Portfolio Assistant. I can help you explore my published projects, education, skills, development interests, and professional background. What would you like to know?');
+    }
+
+    createPortfolioAssistant();
+
+    /* ===============================
        Theme Toggle
     =============================== */
 
-    const savedTheme = window.PortfolioUtils?.getTheme?.() || 'dark';
+    const savedTheme = window.PortfolioUtils?.getTheme?.() || 'light';
     const toggle = document.querySelector('.theme-toggle-nav');
 
     if (toggle) {

@@ -10,11 +10,13 @@ services:
       - key: PORT
         value: 3000
       - key: ADMIN_USERNAME
-        value: your-admin-username
+        sync: false
       - key: ADMIN_PASSWORD
-        value: your-strong-admin-password
+        generateValue: true
       - key: ADMIN_SESSION_SECRET
         generateValue: true
+      - key: CORS_ALLOWED_ORIGINS
+        value: ""
       - key: SMTP_HOST
         value: ""
       - key: SMTP_PORT
@@ -27,3 +29,7 @@ services:
         value: ""
       - key: EMAIL_FROM_NAME
         value: Portfolio Contact Form
+      - key: OPENAI_API_KEY
+        value: ""
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini

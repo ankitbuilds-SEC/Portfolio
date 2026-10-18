@@ -9,7 +9,7 @@
     },
     getTheme() {
       const saved = localStorage.getItem('portfolio-theme');
-      return saved || 'dark';
+      return saved || 'light';
     },
     setTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);

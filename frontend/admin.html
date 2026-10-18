@@ -340,6 +340,173 @@
       margin-bottom: 10px;
     }
 
+    .management-section {
+      margin-top: 28px;
+      padding: 24px;
+      background: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+      border: 1px solid #334155;
+      border-radius: 12px;
+    }
+
+    .management-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .management-header h2 {
+      color: #38bdf8;
+      font-size: 22px;
+    }
+
+    .mini-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #38bdf8;
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .edu-admin-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .edu-admin-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .edu-admin-card h3 {
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+
+    .edu-admin-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: #cbd5e1;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .edu-admin-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .edu-admin-actions button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .edu-admin-actions .edit {
+      background: #38bdf8;
+      color: #000;
+    }
+
+    .edu-admin-actions .delete {
+      background: #ef4444;
+      color: white;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.78);
+      display: none;
+      place-items: center;
+      padding: 20px;
+      z-index: 200;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .modal-panel {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h3 {
+      color: #38bdf8;
+    }
+
+    .modal-close {
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .edu-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .edu-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .edu-form-grid label {
+      display: block;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .edu-form-grid input,
+    .edu-form-grid select,
+    .edu-form-grid textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #111827;
+      color: white;
+      font-family: inherit;
+    }
+
+    .edu-form-grid textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -441,6 +608,98 @@
       </div>
 
       <div class="messages-container" id="messagesContainer"></div>
+
+      <section class="management-section">
+        <div class="management-header">
+          <h2>Education Manager</h2>
+          <button class="mini-btn" onclick="openEducationModal()">Add Education</button>
+        </div>
+        <div id="educationList" class="edu-admin-list"></div>
+      </section>
+    </div>
+
+    <div id="educationModal" class="modal" aria-modal="true" role="dialog">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h3 id="educationModalTitle">Add Education</h3>
+          <button type="button" class="modal-close" onclick="closeEducationModal()">×</button>
+        </div>
+
+        <form id="educationForm">
+          <div class="edu-form-grid">
+            <div class="full">
+              <label>Degree or Qualification</label>
+              <input type="text" name="degree" required />
+            </div>
+            <div class="full">
+              <label>Institution / University</label>
+              <input type="text" name="institution" required />
+            </div>
+            <div>
+              <label>College (if applicable)</label>
+              <input type="text" name="college" />
+            </div>
+            <div>
+              <label>Field of Study</label>
+              <input type="text" name="field_of_study" />
+            </div>
+            <div>
+              <label>Start Year</label>
+              <input type="number" name="start_year" min="1900" max="2100" />
+            </div>
+            <div>
+              <label>End / Expected Year</label>
+              <input type="number" name="end_year" min="1900" max="2100" />
+            </div>
+            <div>
+              <label>Status</label>
+              <select name="status">
+                <option value="Completed">Completed</option>
+                <option value="Pursuing">Pursuing</option>
+                <option value="Discontinued">Discontinued</option>
+              </select>
+            </div>
+            <div>
+              <label>Grade / CGPA / Percentage</label>
+              <input type="text" name="grade" />
+            </div>
+            <div>
+              <label>Location</label>
+              <input type="text" name="location" />
+            </div>
+            <div>
+              <label>Institution Logo URL</label>
+              <input type="url" name="logo_url" />
+            </div>
+            <div class="full">
+              <label>Relevant Coursework</label>
+              <textarea name="coursework"></textarea>
+            </div>
+            <div class="full">
+              <label>Academic Achievements</label>
+              <textarea name="achievements"></textarea>
+            </div>
+            <div class="full">
+              <label>Description</label>
+              <textarea name="description"></textarea>
+            </div>
+            <div class="full">
+              <label>Supporting Document Link</label>
+              <input type="url" name="document_url" />
+            </div>
+            <div class="full">
+              <label>
+                <input type="checkbox" name="published" checked /> Published on the portfolio
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="action-btn secondary" onclick="closeEducationModal()">Cancel</button>
+            <button type="submit" class="action-btn primary">Save Education</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -562,9 +821,167 @@
 
         renderStats();
         renderMessages();
+        await loadEducationManager();
+        await loadEducationPageData();
       } catch (error) {
         console.error('Error:', error);
         messagesContainer.innerHTML = '<p class="empty">Error loading messages. Please try again.</p>';
+      }
+    }
+
+    let educationEditId = null;
+
+    async function loadEducationManager() {
+      const list = document.getElementById('educationList');
+      if (!list) return;
+
+      try {
+        const res = await fetch(`${apiBase}/api/education`, {
+          headers: { Authorization: authHeader }
+        });
+
+        if (!res.ok) {
+          throw new Error('Unable to load education records');
+        }
+
+        const records = await res.json();
+        if (!records.length) {
+          list.innerHTML = '<div class="empty-state"><p>📚 No education records found.</p></div>';
+          return;
+        }
+
+        list.innerHTML = records.map((record) => `
+          <div class="edu-admin-card">
+            <h3>${record.degree}</h3>
+            <div class="edu-admin-meta">
+              <span>${record.institution}</span>
+              ${record.field_of_study ? `<span>• ${record.field_of_study}</span>` : ''}
+              ${record.status ? `<span>• ${record.status}</span>` : ''}
+              ${record.start_year ? `<span>• ${record.start_year}</span>` : ''}
+              ${record.end_year ? `<span>• ${record.end_year}</span>` : ''}
+            </div>
+            <div class="edu-admin-actions">
+              <button class="edit" type="button" onclick="openEducationModal(${record.id})">Edit</button>
+              <button class="delete" type="button" onclick="deleteEducationRecord(${record.id})">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        list.innerHTML = '<div class="empty-state"><p>⚠️ Unable to load education manager.</p></div>';
+      }
+    }
+
+    function openEducationModal(id = null) {
+      const modal = document.getElementById('educationModal');
+      const form = document.getElementById('educationForm');
+      const title = document.getElementById('educationModalTitle');
+      educationEditId = id;
+      title.textContent = id ? 'Edit Education' : 'Add Education';
+      form.reset();
+
+      if (id) {
+        const record = allEducationCache.find(item => item.id === id);
+        if (record) {
+          Object.entries(record).forEach(([key, value]) => {
+            const field = form.elements.namedItem(key);
+            if (!field) return;
+            if (field.type === 'checkbox') {
+              field.checked = Boolean(value);
+            } else {
+              field.value = value || '';
+            }
+          });
+        }
+      }
+
+      modal.classList.add('open');
+    }
+
+    function closeEducationModal() {
+      const modal = document.getElementById('educationModal');
+      modal.classList.remove('open');
+      educationEditId = null;
+      const form = document.getElementById('educationForm');
+      form.reset();
+    }
+
+    function getEducationFormValues() {
+      const form = document.getElementById('educationForm');
+      const payload = {};
+      Object.keys(form.elements).forEach((index) => {
+        const field = form.elements[index];
+        if (!field || !field.name) return;
+        if (field.type === 'checkbox') {
+          payload[field.name] = field.checked;
+        } else if (field.type === 'submit' || field.type === 'button') {
+          return;
+        } else {
+          payload[field.name] = field.value;
+        }
+      });
+      return payload;
+    }
+
+    async function saveEducationRecord(event) {
+      event.preventDefault();
+
+      const payload = getEducationFormValues();
+      const method = educationEditId ? 'PATCH' : 'POST';
+      const url = educationEditId ? `${apiBase}/api/education/${educationEditId}` : `${apiBase}/api/education`;
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: authHeader
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || 'Unable to save education record');
+        }
+
+        closeEducationModal();
+        await loadEducationManager();
+        await loadEducationPageData();
+      } catch (error) {
+        alert(error.message || 'Unable to save education record');
+      }
+    }
+
+    async function deleteEducationRecord(id) {
+      if (!confirm('Delete this education record?')) return;
+      try {
+        const res = await fetch(`${apiBase}/api/education/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: authHeader }
+        });
+
+        if (!res.ok) {
+          throw new Error('Unable to delete education record');
+        }
+
+        await loadEducationManager();
+        await loadEducationPageData();
+      } catch (error) {
+        alert(error.message || 'Unable to delete education record');
+      }
+    }
+
+    let allEducationCache = [];
+
+    async function loadEducationPageData() {
+      try {
+        const res = await fetch(`${apiBase}/api/education`, {
+          headers: { Authorization: authHeader }
+        });
+        if (!res.ok) return;
+        allEducationCache = await res.json();
+      } catch (error) {
+        allEducationCache = [];
       }
     }
 
@@ -774,6 +1191,8 @@
         alert('Error deleting message');
       }
     }
+
+    document.getElementById('educationForm').addEventListener('submit', saveEducationRecord);
   </script>
 </body>
 </html>
